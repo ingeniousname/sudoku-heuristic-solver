@@ -3,7 +3,8 @@
 #
 
 # Add source to this project's executable.
-add_executable (sudoku "sudoku.cpp" "sudoku.h")
+add_executable (sudoku
+	${CMAKE_CURRENT_SOURCE_DIR}/sudoku.c)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET sudoku PROPERTY CXX_STANDARD 20)
