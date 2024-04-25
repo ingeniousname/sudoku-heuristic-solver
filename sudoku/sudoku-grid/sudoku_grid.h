@@ -1,7 +1,6 @@
 #ifndef SUDOKU_GRID_H
 #define SUDOKU_GRID_H
 
-#define NULL 0
 #define SUDOKU_N 9
 #define SUDOKU_SIZE SUDOKU_N * SUDOKU_N
 
