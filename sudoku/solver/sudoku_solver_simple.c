@@ -1,24 +1,20 @@
 #include "sudoku_solver_simple.h"
+#include "../utils/utils.h"
 
 void remove_possibilities(struct Sudoku_Grid* grid, int value, int row, int col)
 {
     int value_mask = 1 << value;
-    for(int i = 0; i < SUDOKU_N; i++)
-    {
-        grid->possibilities[row * SUDOKU_N + i] -= value_mask;
-        grid->possibilities[i * SUDOKU_N + col] -= value_mask;
-    }
-    grid->possibilities[row * SUDOKU_N + col] += value_mask;
+    grid->possibilities_row[row] &= ~value_mask;
+    grid->possibilities_col[col] &= ~value_mask;
+    grid->possibilities_3x3[(row / 3) * 3 + col / 3] &= ~value_mask;
 }
 
 void add_possibilities(struct Sudoku_Grid* grid, int value, int row, int col)
 {
     int value_mask = 1 << value;
-    for(int i = 0; i < SUDOKU_N; i++)
-    {
-        grid->possibilities[row * SUDOKU_N + i] |= value_mask;
-        grid->possibilities[i * SUDOKU_N + col] |= value_mask;
-    }
+    grid->possibilities_row[row] |= value_mask;
+    grid->possibilities_col[col] |= value_mask;
+    grid->possibilities_3x3[(row / 3) * 3 + col / 3] |= value_mask;
 }
 
 int Sudoku_Grid_solve_simple_single_answer(struct Sudoku_Grid* grid)
@@ -39,16 +35,22 @@ int Sudoku_Grid_solve_simple_single_answer_aux(struct Sudoku_Grid* grid, int row
 
     if(grid->grid[row * SUDOKU_N + col])
         return Sudoku_Grid_solve_simple_single_answer_aux(grid, row, col + 1);
-    
-    for(int i = 1, mask = 2; i < SUDOKU_N; i++, mask <<= 1)
+
+    int possibilities = (grid->possibilities_row[row] & grid->possibilities_col[col] & grid->possibilities_3x3[(row / 3) * 3 + col / 3]) >> 1;
+    int value = 1;
+    while (possibilities)
     {
-        if((grid->possibilities[row * SUDOKU_N + col] & mask) != 0)
+        if (possibilities & 1)
         {
-            remove_possibilities(grid, i, row, col);
+            remove_possibilities(grid, value, row, col);
+            grid->grid[row * SUDOKU_N + col] = value;
             if(Sudoku_Grid_solve_simple_single_answer_aux(grid, row, col + 1))
                 return 1;
-            add_possibilities(grid, i, row, col);
+            grid->grid[row * SUDOKU_N + col] = 0;
+            add_possibilities(grid, value, row, col);
         }
+        value++;
+        possibilities >>= 1;
     }
     return 0;
 }

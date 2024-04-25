@@ -7,7 +7,9 @@
 struct Sudoku_Grid
 {
     int grid[SUDOKU_SIZE];
-    int possibilities[SUDOKU_SIZE];
+    int possibilities_row[SUDOKU_N];
+    int possibilities_col[SUDOKU_N];
+    int possibilities_3x3[SUDOKU_N];
 };
 
 void Sudoku_Grid_init(struct Sudoku_Grid* grid, int* data);

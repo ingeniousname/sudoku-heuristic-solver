@@ -2,7 +2,6 @@
 #define SUDOKU_SOLVER_SIMPLE_H
 
 #include "../sudoku-grid/sudoku_grid.h"
-#include "../sudoku-grid/sudoku_answer.h"
 
 
 void remove_possibilities(struct Sudoku_Grid* grid, int value, int row, int col);

@@ -9,4 +9,5 @@ void print_sudoku(struct Sudoku_Grid* grid)
             printf("%d ", grid->grid[row * SUDOKU_N + col]);
         printf("\n");
     }
+    printf("\n");
 }
