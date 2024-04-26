@@ -4,10 +4,11 @@
 #include "utils/utils.h"
 
 
-int main()
+int main(int argc, char* argv[])
 {
-	printf("Hello cmake!\n");
-    struct Sudoku_Grid grid = parse_from_file("sample_sudoku.txt");
+    if(argc != 2)
+        return -1;
+    struct Sudoku_Grid grid = parse_from_string(argv[1]);
     Sudoku_Grid_solve_simple_single_answer(&grid);
     print_sudoku(&grid);
     

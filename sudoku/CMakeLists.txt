@@ -11,6 +11,8 @@ add_executable (sudoku
 	${CMAKE_CURRENT_SOURCE_DIR}/parser/parser.c
     )
 
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET sudoku PROPERTY C_STANDARD 11)
 endif()
