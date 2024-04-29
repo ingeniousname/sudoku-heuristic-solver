@@ -2,6 +2,7 @@
 #include "sudoku_solver_simple.h"
 #include "sudoku_heuristics.h"
 #include "../utils/utils.h"
+#include <stdio.h>
 
 int find_next_idx(struct Sudoku_Grid* grid, int row, int col)
 {
@@ -35,7 +36,8 @@ int Sudoku_Grid_solve_heuristics_single_answer_aux(struct Sudoku_Grid* grid, int
 
     row = idx / SUDOKU_N, col = idx % SUDOKU_N;
 
-    int possibilities = (grid->possibilities_row[row] & grid->possibilities_col[col] & grid->possibilities_3x3[(row / 3) * 3 + col / 3]) >> 1;
+    apply_naked_pairs(grid, row, col);
+    int possibilities = grid->possibilities_cell[row * SUDOKU_N + col] >> 1;
     int value = 1;
     while (possibilities)
     {

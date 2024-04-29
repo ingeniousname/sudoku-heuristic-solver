@@ -10,6 +10,7 @@ struct Sudoku_Grid
     int possibilities_row[SUDOKU_N];
     int possibilities_col[SUDOKU_N];
     int possibilities_3x3[SUDOKU_N];
+    int possibilities_cell[SUDOKU_SIZE];
 };
 
 void Sudoku_Grid_init(struct Sudoku_Grid* grid, int* data);
