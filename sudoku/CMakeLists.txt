@@ -7,8 +7,11 @@ add_executable (sudoku
 	${CMAKE_CURRENT_SOURCE_DIR}/sudoku.c
 	${CMAKE_CURRENT_SOURCE_DIR}/sudoku-grid/sudoku_grid.c
 	${CMAKE_CURRENT_SOURCE_DIR}/solver/sudoku_solver_simple.c
+	${CMAKE_CURRENT_SOURCE_DIR}/solver/sudoku_solver_heuristics.c
+	${CMAKE_CURRENT_SOURCE_DIR}/solver/sudoku_heuristics.c
 	${CMAKE_CURRENT_SOURCE_DIR}/utils/utils.c
 	${CMAKE_CURRENT_SOURCE_DIR}/parser/parser.c
+
     )
 
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
