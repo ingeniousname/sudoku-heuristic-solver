@@ -2,7 +2,6 @@
 #include "sudoku_solver_simple.h"
 #include "sudoku_heuristics.h"
 #include "../utils/utils.h"
-#include <stdio.h>
 
 int find_next_idx(struct Sudoku_Grid* grid, int row, int col)
 {

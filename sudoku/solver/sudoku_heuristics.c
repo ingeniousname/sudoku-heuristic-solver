@@ -22,18 +22,6 @@ int find_MRV_idx(struct Sudoku_Grid* grid)
     return min_idx;
 }
 
-void print_sudoku2(struct Sudoku_Grid* grid)
-{
-    for (int row = 0; row < SUDOKU_N; row++)
-    {
-        for (int col = 0; col < SUDOKU_N; col++)
-            printf("%d ", grid->grid[row * SUDOKU_N + col]);
-        printf("\n");
-    }
-    printf("\n");
-
-}
-
 void apply_naked_pairs(struct Sudoku_Grid* grid, int row, int col)
 {
     unsigned int cell_possibilities = grid->possibilities_cell[row * SUDOKU_N + col] >> 1;
