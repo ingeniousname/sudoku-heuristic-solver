@@ -11,3 +11,14 @@ void print_sudoku(struct Sudoku_Grid* grid)
     }
     printf("\n");
 }
+
+int count_mask_bits(int mask)
+{
+    int count = 0;
+    while (mask)
+    {
+        count += mask & 1;
+        mask >>= 1;
+    }
+    return count;
+}
