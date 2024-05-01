@@ -8,7 +8,12 @@ void Sudoku_Grid_init(struct Sudoku_Grid* grid, int* data)
 	{
 		grid->possibilities_row[i] = (1 << (SUDOKU_N + 1)) - 1;
 		grid->possibilities_col[i] = (1 << (SUDOKU_N + 1)) - 1;
-		grid->possibilities_3x3[i] = (1 << (SUDOKU_N + 1)) - 1; 
+		grid->possibilities_3x3[i] = (1 << (SUDOKU_N + 1)) - 1;
+        
+        for (int j = 0; j < SUDOKU_N; ++j)
+        {
+            grid->possibilities_cell[i * SUDOKU_N + j] = (1 << (SUDOKU_N + 1)) - 1;
+        }
 	}
     
     if(data != NULL)
