@@ -1,4 +1,6 @@
 #include "sudoku_solver_heuristics.h"
+#include "sudoku_heuristics.h"
+#include "../utils/sudoku_iterator.h"
 
 int find_MRV_idx(struct Sudoku_Grid* grid)
 {
@@ -10,7 +12,7 @@ int find_MRV_idx(struct Sudoku_Grid* grid)
             if (grid->grid[row * SUDOKU_N + col])
                 continue;
             int possibilities = grid->possibilities_row[row] & grid->possibilities_col[col] & grid->possibilities_3x3[(row / 3) * 3 + col / 3];
-            int count = count_mask_bits(possibilities);
+            int count = __popcnt(possibilities);
 
             if (count < min_val)
             {
@@ -94,6 +96,95 @@ void apply_naked_pairs(struct Sudoku_Grid* grid, int row, int col)
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+void apply_hidden_pairs(struct Sudoku_Grid* grid, int row, int col)
+{
+    int main_idx = row * SUDOKU_N + col;
+    int possibilities = grid->possibilities_cell[main_idx];
+    // row
+    for (int idx1 = row_iterator_start(row, col); idx1 != row_iterator_end(row, col); idx1 = row_iterator_next(row, col, idx1))
+    {
+        // if we found possible hidden pair candidate
+        if (!idx1 == main_idx && __popcnt(possibilities & grid->possibilities_cell[idx1]) == 2)
+        {
+            int pair = possibilities & grid->possibilities_cell[idx1];
+            int is_a_hidden_pair = 1;
+            for (int idx2 = row_iterator_start(row, col); idx2 != row_iterator_end(row, col); idx2 = row_iterator_next(row, col, idx2))
+            {
+                // we have found a cell where exists an element from a possible pair - thus it is not a hidden pair
+                if (idx2 != idx1 && idx2 != main_idx && grid->possibilities_cell[idx2] & pair != 0)
+                {
+                    is_a_hidden_pair = 0;
+                    break;
+                }
+            }
+                
+            // if it actually is a hidden pair - update possibilities
+            if (is_a_hidden_pair)
+            {
+                grid->possibilities_cell[main_idx] = pair;
+                grid->possibilities_cell[idx1] = pair;
+                return;
+            }
+        }
+    }
+
+    // col
+    for (int idx1 = col_iterator_start(row, col); idx1 != col_iterator_end(row, col); idx1 = col_iterator_next(row, col, idx1))
+    {
+        // if we found possible hidden pair candidate
+        if (!idx1 == main_idx && __popcnt(possibilities & grid->possibilities_cell[idx1]) == 2)
+        {
+            int pair = possibilities & grid->possibilities_cell[idx1];
+            int is_a_hidden_pair = 1;
+            for (int idx2 = col_iterator_start(row, col); idx2 != col_iterator_end(row, col); idx2 = col_iterator_next(row, col, idx2))
+            {
+                // we have found a cell where exists an element from a possible pair - thus it is not a hidden pair
+                if (idx2 != idx1 && idx2 != main_idx && grid->possibilities_cell[idx2] & pair != 0)
+                {
+                    is_a_hidden_pair = 0;
+                    break;
+                }
+            }
+
+            // if it actually is a hidden pair - update possibilities
+            if (is_a_hidden_pair)
+            {
+                grid->possibilities_cell[main_idx] = pair;
+                grid->possibilities_cell[idx1] = pair;
+                return;
+            }
+        }
+    }
+
+    // 3x3 square
+    for (int idx1 = sq3x3_iterator_start(row, col); idx1 != sq3x3_iterator_end(row, col); idx1 = sq3x3_iterator_next(row, col,idx1))
+    {
+        // if we found possible hidden pair candidate
+        if (!idx1 == main_idx && __popcnt(possibilities & grid->possibilities_cell[idx1]) == 2)
+        {
+            int pair = possibilities & grid->possibilities_cell[idx1];
+            int is_a_hidden_pair = 1;
+            for (int idx2 = sq3x3_iterator_start(row, col); idx2 != sq3x3_iterator_end(row, col); idx2 = sq3x3_iterator_next(row, col, idx2))
+            {
+                // we have found a cell where exists an element from a possible pair - thus it is not a hidden pair
+                if (idx2 != idx1 && idx2 != main_idx && grid->possibilities_cell[idx2] & pair != 0)
+                {
+                    is_a_hidden_pair = 0;
+                    break;
+                }
+            }
+
+            // if it actually is a hidden pair - update possibilities
+            if (is_a_hidden_pair)
+            {
+                grid->possibilities_cell[main_idx] = pair;
+                grid->possibilities_cell[idx1] = pair;
+                return;
             }
         }
     }

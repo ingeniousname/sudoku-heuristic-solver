@@ -10,8 +10,8 @@ int main(int argc, char* argv[])
         return -1;
     struct Sudoku_Grid grid = parse_from_string(argv[1]);
     print_sudoku(&grid);
-    //Sudoku_Grid_solve_simple_single_answer(&grid);
-    Sudoku_Grid_solve_heuristics_single_answer(&grid);
+    Sudoku_Grid_solve_simple_single_answer(&grid);
+    //Sudoku_Grid_solve_heuristics_single_answer(&grid);
     // useful for speed testing
     if(argc == 2)
         print_sudoku(&grid);

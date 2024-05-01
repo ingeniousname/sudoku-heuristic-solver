@@ -4,7 +4,6 @@
 #include "../sudoku-grid/sudoku_grid.h"
 
 void print_sudoku(struct Sudoku_Grid* grid);
-int count_mask_bits(int mask);
 int validate_solution(struct Sudoku_Grid* grid);
 
 #endif
