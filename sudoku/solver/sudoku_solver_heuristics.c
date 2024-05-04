@@ -21,12 +21,32 @@ int find_next_idx(struct Sudoku_Grid* grid, int row, int col, int use_MRV)
     return row * SUDOKU_N + col;
 }
 
+// Find array of values that fit the box
+void find_box_values(int *values, struct Sudoku_Grid* grid, int row, int col, int use_LCV)
+{
+    int possibilities = grid->possibilities_cell[row * SUDOKU_N + col] >> 1;
+    int i = 0;
+    int value = 1;
+    while (possibilities)
+    {
+        if (possibilities & 1)
+            values[i++] = value;
+        value++;
+        possibilities >>= 1;
+    }
+
+    // Sort possible values in LCV order
+    if (use_LCV)
+        sort_LCV_values(values, grid, row, col);
+}
+
 int Sudoku_Grid_solve_heuristics_single_answer(struct Sudoku_Grid* grid, int opt)
 {
-    // Opt maska bitowa z konfiguracj¹ z kolejnoœci¹ jak poni¿ej
+    // Opt maska bitowa z konfiguracja w kolejnosci jak ponizej
     Heuristic_Opts h_opts;
     h_opts.use_MRV = CHECK_BIT(opt, 0);
     h_opts.use_NP = CHECK_BIT(opt, 1);
+    h_opts.use_LCV = CHECK_BIT(opt, 2);
 
     return Sudoku_Grid_solve_heuristics_single_answer_aux(grid, 0, 0, h_opts);
 }
@@ -41,21 +61,20 @@ int Sudoku_Grid_solve_heuristics_single_answer_aux(struct Sudoku_Grid* grid, int
 
     if(opts.use_NP)
         apply_naked_pairs(grid, row, col);
-    int possibilities = grid->possibilities_cell[row * SUDOKU_N + col] >> 1;
-    int value = 1;
-    while (possibilities)
+    int values[SUDOKU_N] = { 0 };
+    int value, i = 0;
+    find_box_values(values, grid, row, col, opts.use_LCV);
+
+    // Zero value is the end of the value list
+    while (values[i] > 0)
     {
-        if (possibilities & 1)
-        {
-            remove_possibilities(grid, value, row, col);
-            grid->grid[row * SUDOKU_N + col] = value;
-            if (Sudoku_Grid_solve_heuristics_single_answer_aux(grid, row, col, opts))
-                return 1;
-            grid->grid[row * SUDOKU_N + col] = 0;
-            add_possibilities(grid, value, row, col);
-        }
-        value++;
-        possibilities >>= 1;
+        value = values[i++];
+        remove_possibilities(grid, value, row, col);
+        grid->grid[row * SUDOKU_N + col] = value;
+        if (Sudoku_Grid_solve_heuristics_single_answer_aux(grid, row, col, opts))
+            return 1;
+        grid->grid[row * SUDOKU_N + col] = 0;
+        add_possibilities(grid, value, row, col);
     }
     return 0;
 }

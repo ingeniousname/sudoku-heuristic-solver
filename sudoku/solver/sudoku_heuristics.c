@@ -98,3 +98,58 @@ void apply_naked_pairs(struct Sudoku_Grid* grid, int row, int col)
         }
     }
 }
+
+void sort_LCV_values(int* values, struct Sudoku_Grid* grid, int row, int col)
+{
+    int value_consts[SUDOKU_N] = { 0 };
+
+    for (int i = 0; i < SUDOKU_N; ++i)
+    {
+        // count row
+        if (i != col)
+            check_constraints(values, value_consts, grid->possibilities_cell[row * SUDOKU_N + i]);
+
+        // count column
+        if (i != row)
+            check_constraints(values, value_consts, grid->possibilities_cell[i * SUDOKU_N + col]);
+    }
+
+    // count 3x3
+    int start_row = row / 3 * 3;
+    int start_col = col / 3 * 3;
+    for (int i = start_col; i < start_col + 3; ++i)
+        for (int j = start_row; j < start_row + 3; ++j)
+            if (i != col && j != row)
+                check_constraints(values, value_consts, grid->possibilities_cell[j * SUDOKU_N + i]);
+
+    // sort by key (bubble sort :3)
+    int i, j, temp;
+    for (i = 0; values[i] > 0; ++i)
+    {
+        for (j = i + 1; values[j] > 0; ++j)
+        {
+            if (value_consts[i] > value_consts[j])
+            {
+                temp = value_consts[i];
+                value_consts[i] = value_consts[j];
+                value_consts[j] = temp;
+
+                temp = values[i];
+                values[i] = values[j];
+                values[j] = temp;
+            }
+        }
+    }
+}
+
+void check_constraints(int* values, int* value_consts, int possibilities)
+{
+    int i = 0;
+
+    while (values[i] > 0)
+    {
+        if (CHECK_BIT(possibilities, (values[i] - 1)))
+            value_consts[i]++;
+        i++;
+    }
+}
