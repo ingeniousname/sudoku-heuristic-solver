@@ -11,13 +11,14 @@ add_executable (sudoku
 	${CMAKE_CURRENT_SOURCE_DIR}/solver/sudoku_heuristics.c
 	${CMAKE_CURRENT_SOURCE_DIR}/utils/utils.c
 	${CMAKE_CURRENT_SOURCE_DIR}/parser/parser.c
+	${CMAKE_CURRENT_SOURCE_DIR}/utils/timer.cpp
 
     )
 
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET sudoku PROPERTY C_STANDARD 11)
+  set_property(TARGET sudoku PROPERTY CXX_STANDARD 11)
 endif()
 
 # TODO: Add tests and install targets if needed.
