@@ -1,6 +1,5 @@
 #include "sudoku_solver_heuristics.h"
 #include "sudoku_solver_simple.h"
-#include "sudoku_heuristics.h"
 #include "../utils/utils.h"
 
 int find_next_idx(struct Sudoku_Grid* grid, int row, int col, int use_MRV)
@@ -24,28 +23,23 @@ int find_next_idx(struct Sudoku_Grid* grid, int row, int col, int use_MRV)
 
 int Sudoku_Grid_solve_heuristics_single_answer(struct Sudoku_Grid* grid, int opt)
 {
-    switch (opt)
-    {
-    case 1: // MRV
-        return Sudoku_Grid_solve_heuristics_single_answer_aux(grid, 0, 0, 1, 0);
-    case 2: // Naked pairs
-        return Sudoku_Grid_solve_heuristics_single_answer_aux(grid, 0, 0, 0, 1);
-    case 3: // MRV + Naked pairs
-        return Sudoku_Grid_solve_heuristics_single_answer_aux(grid, 0, 0, 1, 1);
-    default:
-        return Sudoku_Grid_solve_heuristics_single_answer_aux(grid, 0, 0, 0, 0);
-    }
+    // Opt maska bitowa z konfiguracj¹ z kolejnoœci¹ jak poni¿ej
+    Heuristic_Opts h_opts;
+    h_opts.use_MRV = CHECK_BIT(opt, 0);
+    h_opts.use_NP = CHECK_BIT(opt, 1);
+
+    return Sudoku_Grid_solve_heuristics_single_answer_aux(grid, 0, 0, h_opts);
 }
 
-int Sudoku_Grid_solve_heuristics_single_answer_aux(struct Sudoku_Grid* grid, int row, int col, int use_MRV, int use_NP)
+int Sudoku_Grid_solve_heuristics_single_answer_aux(struct Sudoku_Grid* grid, int row, int col, Heuristic_Opts opts)
 {
-    int idx = find_next_idx(grid, row, col, use_MRV);
+    int idx = find_next_idx(grid, row, col, opts.use_MRV);
     if (idx < 0)
         return 1;
 
     row = idx / SUDOKU_N, col = idx % SUDOKU_N;
 
-    if(use_NP)
+    if(opts.use_NP)
         apply_naked_pairs(grid, row, col);
     int possibilities = grid->possibilities_cell[row * SUDOKU_N + col] >> 1;
     int value = 1;
@@ -55,7 +49,7 @@ int Sudoku_Grid_solve_heuristics_single_answer_aux(struct Sudoku_Grid* grid, int
         {
             remove_possibilities(grid, value, row, col);
             grid->grid[row * SUDOKU_N + col] = value;
-            if (Sudoku_Grid_solve_heuristics_single_answer_aux(grid, row, col, use_MRV, use_NP))
+            if (Sudoku_Grid_solve_heuristics_single_answer_aux(grid, row, col, opts))
                 return 1;
             grid->grid[row * SUDOKU_N + col] = 0;
             add_possibilities(grid, value, row, col);
