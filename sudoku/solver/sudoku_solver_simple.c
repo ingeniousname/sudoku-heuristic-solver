@@ -48,8 +48,8 @@ int Sudoku_Grid_solve_simple_single_answer_aux(struct Sudoku_Grid* grid, int row
         return Sudoku_Grid_solve_simple_single_answer_aux(grid, row, col + 1);
 
     int grid_tmp[SUDOKU_SIZE];
-    //apply_naked_pairs(grid, row, col);
     apply_hidden_pairs(grid, row, col);
+    apply_naked_pairs(grid, row, col);
     int possibilities = grid->possibilities_cell[row * SUDOKU_N + col] >> 1;
     int value = 1;
     while (possibilities)
