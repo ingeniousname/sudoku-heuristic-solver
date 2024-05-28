@@ -3,11 +3,20 @@
 
 void print_sudoku(struct Sudoku_Grid* grid)
 {
+    printf("\n");
     for(int row = 0; row < SUDOKU_N; row++)
     {
-        for(int col = 0; col < SUDOKU_N; col++)
-            printf("%d ", grid->grid[row * SUDOKU_N + col]);
-        printf("\n");
+        if (row % 3 == 0)
+            printf("-------------------------------\n");
+        for (int col = 0; col < SUDOKU_N; col++)
+        {
+            if (col % 3 == 0)
+                printf("|");
+            printf(" %d ", grid->grid[row * SUDOKU_N + col]);
+        }
+        printf("|\n");
+        if (row == SUDOKU_N - 1)
+            printf("-------------------------------\n");
     }
     printf("\n");
 }
