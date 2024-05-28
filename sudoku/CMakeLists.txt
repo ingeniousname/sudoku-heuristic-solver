@@ -10,6 +10,7 @@ add_executable (sudoku
 	${CMAKE_CURRENT_SOURCE_DIR}/solver/sudoku_solver_heuristics.c
 	${CMAKE_CURRENT_SOURCE_DIR}/solver/sudoku_heuristics.c
 	${CMAKE_CURRENT_SOURCE_DIR}/utils/utils.c
+	${CMAKE_CURRENT_SOURCE_DIR}/utils/sudoku_iterator.c
 	${CMAKE_CURRENT_SOURCE_DIR}/parser/parser.c
 	${CMAKE_CURRENT_SOURCE_DIR}/utils/timer.cpp
 

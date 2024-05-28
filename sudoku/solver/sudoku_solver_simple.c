@@ -7,7 +7,7 @@ void remove_possibilities(struct Sudoku_Grid* grid, int value, int row, int col)
     grid->possibilities_row[row] &= ~value_mask;
     grid->possibilities_col[col] &= ~value_mask;
     grid->possibilities_3x3[(row / 3) * 3 + col / 3] &= ~value_mask;
-    update_cell_possibilities(grid, value, row, col, 0);
+    update_cell_possibilities(grid, row, col);
 }
 
 void add_possibilities(struct Sudoku_Grid* grid, int value, int row, int col)
@@ -16,62 +16,15 @@ void add_possibilities(struct Sudoku_Grid* grid, int value, int row, int col)
     grid->possibilities_row[row] |= value_mask;
     grid->possibilities_col[col] |= value_mask;
     grid->possibilities_3x3[(row / 3) * 3 + col / 3] |= value_mask;
-    update_cell_possibilities(grid, value, row, col, 1);
+    update_cell_possibilities(grid, row, col);
 }
 
-void update_cell_possibilities(struct Sudoku_Grid* grid, int value, int row, int col, int add)
+void update_cell_possibilities(struct Sudoku_Grid* grid, int row, int col)
 {
-    int value_mask = 1 << value;
     for (int i = 0; i < SUDOKU_N; ++i)
     {
-        // update row
-        if (i != col)
-        {
-            if (add)
-            {
-                if ((grid->possibilities_col[i] & value_mask) != 0 && (grid->possibilities_3x3[(row / 3) * 3 + i / 3] & value_mask) != 0)
-                    grid->possibilities_cell[row * SUDOKU_N + i] |= value_mask;
-            }
-            else
-            {
-                grid->possibilities_cell[row * SUDOKU_N + i] &= ~value_mask;
-            }
-        }
-
-        // update column
-        if (i != row)
-        {
-            if (add)
-            {
-                if ((grid->possibilities_row[i] & value_mask) != 0 && (grid->possibilities_3x3[(i / 3) * 3 + col / 3] & value_mask) != 0)
-                    grid->possibilities_cell[i * SUDOKU_N + col] |= value_mask;
-            }
-            else
-            {
-                grid->possibilities_cell[i * SUDOKU_N + col] &= ~value_mask;
-            }
-        }
-    }
-
-    int start_row = row / 3 * 3;
-    int start_col = col / 3 * 3;
-    for (int i = start_col; i < start_col + 3; ++i)
-    {
-        for (int j = start_row; j < start_row + 3; ++j)
-        {
-            if (i != col && j != row)
-            {
-                if (add)
-                {
-                    if ((grid->possibilities_col[i] & value_mask) != 0 && (grid->possibilities_row[j] & value_mask) != 0)
-                        grid->possibilities_cell[j * SUDOKU_N + i] |= value_mask;
-                }
-                else
-                {
-                    grid->possibilities_cell[j * SUDOKU_N + i] &= ~value_mask;
-                }
-            }
-        }
+        grid->possibilities_cell[row * SUDOKU_N + i] = grid->possibilities_row[row] & grid->possibilities_col[i] & grid->possibilities_3x3[(row / 3) * 3 + i / 3];
+        grid->possibilities_cell[i * SUDOKU_N + col] = grid->possibilities_row[i] & grid->possibilities_col[col] & grid->possibilities_3x3[(i / 3) * 3 + col / 3];
     }
 }
 
@@ -95,6 +48,7 @@ int Sudoku_Grid_solve_simple_single_answer_aux(struct Sudoku_Grid* grid, int row
         return Sudoku_Grid_solve_simple_single_answer_aux(grid, row, col + 1);
 
     int grid_tmp[SUDOKU_SIZE];
+    apply_hidden_pairs(grid, row, col);
     apply_naked_pairs(grid, row, col);
     int possibilities = grid->possibilities_cell[row * SUDOKU_N + col] >> 1;
     int value = 1;

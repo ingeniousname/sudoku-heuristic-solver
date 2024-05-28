@@ -46,7 +46,8 @@ int Sudoku_Grid_solve_heuristics_single_answer(struct Sudoku_Grid* grid, int opt
     Heuristic_Opts h_opts;
     h_opts.use_MRV = CHECK_BIT(opt, 0);
     h_opts.use_NP = CHECK_BIT(opt, 1);
-    h_opts.use_LCV = CHECK_BIT(opt, 2);
+    h_opts.use_HP = CHECK_BIT(opt, 2);
+    h_opts.use_LCV = CHECK_BIT(opt, 3);
 
     return Sudoku_Grid_solve_heuristics_single_answer_aux(grid, 0, 0, h_opts);
 }
@@ -61,6 +62,8 @@ int Sudoku_Grid_solve_heuristics_single_answer_aux(struct Sudoku_Grid* grid, int
 
     if(opts.use_NP)
         apply_naked_pairs(grid, row, col);
+    if (opts.use_HP)
+        apply_hidden_pairs(grid, row, col);
     int values[SUDOKU_N] = { 0 };
     int value, i = 0;
     find_box_values(values, grid, row, col, opts.use_LCV);
